@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exchange Rate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            position: relative;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        input, button, select {
+            padding: 10px;
+            margin: 10px;
+            width: calc(100% - 22px);
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: inline-block;
+            padding: 10px;
+            border-radius: 50%;
+            background-color: #007BFF;
+            color: white;
+            font-size: 24px;
+            line-height: 1;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-button" onclick="location.reload()">←</div>
+        <h1>Exchange Rate API</h1>
+        <select id="currency">
+            <option value="PKR">Pakistani Rupee (PKR)</option>
+            <option value="GBP">British Pound (GBP)</option>
+            <option value="USD">US Dollar (USD)</option>
+            <option value="AED">UAE Dirham (AED)</option>
+            <option value="EUR">Euro (EUR)</option>
+            <option value="JPY">Japanese Yen (JPY)</option>
+            <option value="CNY">Chinese Yuan (CNY)</option>
+            <option value="INR">Indian Rupee (INR)</option>
+            <option value="AUD">Australian Dollar (AUD)</option>
+
+            
+            <!-- Add other currencies as needed -->
+        </select>
+        <button onclick="fetchRates()">Get Rates</button>
+        <div class="output" id="output"></div>
+        <h2>Convert Currencies</h2>
+        <select id="fromCurrency">
+            <option value="PKR">Pakistani Rupee (PKR)</option>
+            <option value="GBP">British Pound (GBP)</option>
+            <option value="USD">US Dollar (USD)</option>
+            <option value="AED">UAE Dirham (AED)</option>
+            <option value="EUR">Euro (EUR)</option>
+            <option value="JPY">Japanese Yen (JPY)</option>
+            <option value="CNY">Chinese Yuan (CNY)</option>
+            <option value="INR">Indian Rupee (INR)</option>
+            <option value="AUD">Australian Dollar (AUD)</option>
+
+            
+            <!-- Add other currencies as needed -->
+        </select>
+        <select id="toCurrency">
+            <option value="USD">US Dollar (USD)</option>
+            <option value="PKR">Pakistani Rupee (PKR)</option>
+            <option value="GBP">British Pound (GBP)</option>
+            <option value="AED">UAE Dirham (AED)</option>
+            <option value="EUR">Euro (EUR)</option>
+            <option value="JPY">Japanese Yen (JPY)</option>
+            <option value="CNY">Chinese Yuan (CNY)</option>
+            <option value="INR">Indian Rupee (INR)</option>
+            <option value="AUD">Australian Dollar (AUD)</option>
+
+            <!-- Add other currencies as needed -->
+        </select>
+        <input type="number" id="amount" placeholder="Amount (optional)">
+        <button onclick="convertCurrency()">Convert</button>
+        <div class="conversion-output" id="conversion-output"></div>
+    </div>
+    <script>
+        async function fetchRates() {
+            const currency = document.getElementById('currency').value.toUpperCase();
+            const url = `/api/${currency}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                let output = `<h2>Rates for ${currency}</h2>`;
+                output += `<table>`;
+                output += `<tr><th>Currency</th><th>Rate</th></tr>`;
+                for (const [currencyCode, rate] of Object.entries(data.conversion_rates)) {
+                    output += `<tr><td>${currencyCode}</td><td>${rate}</td></tr>`;
+                }
+                output += `</table>`;
+
+                document.getElementById('output').innerHTML = output;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function convertCurrency() {
+            const fromCurrency = document.getElementById('fromCurrency').value.toUpperCase();
+            const toCurrency = document.getElementById('toCurrency').value.toUpperCase();
+            let amount = document.getElementById('amount').value;
+            
+            // Check if amount is not a valid number or less than 1
+            if (isNaN(parseFloat(amount)) || parseFloat(amount) < 1) {
+                document.getElementById('conversion-output').innerHTML = "<p>Please enter a valid amount (greater than or equal to 1).</p>";
+                return;
+            }
+    
+            const url = `/api/${fromCurrency}/${toCurrency}/${amount}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        let output = `<h2>Conversion Result</h2>`;
+        output += `<p>${amount} ${fromCurrency} = ${data.conversion_result} ${toCurrency}</p>`;
+
+        document.getElementById('conversion-output').innerHTML = output;
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+    </script>
+</body>
+</html>
