@@ -3,181 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exchange Rate</title>
+    <title>User Authentication</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f4f4f4;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
         .container {
-            max-width: 600px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            text-align: center;
-            position: relative;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        input, button, select {
-            padding: 10px;
-            margin: 10px;
-            width: calc(100% - 22px);
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        table {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
             width: 100%;
-            border-collapse: collapse;
+            max-width: 800px;
             margin-top: 20px;
-            border-radius: 8px;
-            overflow: hidden;
+            box-sizing: border-box;
+            padding: 20px;
+        }
+        .form-container {
+            width: 45%;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px; /* Space between forms */
         }
-        th, td {
-            padding: 12px 8px;
-            border-bottom: 1px solid #ddd;
+        .form-header {
+            text-align: center;
+            margin-bottom: 20px;
         }
-        th {
-            background-color: #f2f2f2;
+        .form-field {
+            margin-bottom: 15px;
         }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            display: inline-block;
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="tel"] {
+            width: calc(100% - 30px); /* Adjust to leave space for the icon */
             padding: 10px;
-            border-radius: 50%;
-            background-color: #007BFF;
-            color: white;
-            font-size: 24px;
-            line-height: 1;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
         }
-        .back-button:hover {
-            background-color: #0056b3;
+        .password-toggle {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-toggle input {
+            width: 100%;
+            padding-right: 40px; /* Space for the icon */
+        }
+        .password-toggle .toggle-icon {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            color: #888; /* Adjust color as needed */
+        }
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        .success {
+            color: green;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        #responseContainer {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: none; /* Initially hidden */
+        }
+        #responseContent {
+            margin: 0;
         }
     </style>
 </head>
 <body>
+    <div id="responseContainer">
+        <div id="responseContent" class="error"></div>
+    </div>
     <div class="container">
-        <div class="back-button" onclick="location.reload()">←</div>
-        <h1>Exchange Rate API</h1>
-        <select id="currency">
-            <option value="PKR">Pakistani Rupee (PKR)</option>
-            <option value="GBP">British Pound (GBP)</option>
-            <option value="USD">US Dollar (USD)</option>
-            <option value="AED">UAE Dirham (AED)</option>
-            <option value="EUR">Euro (EUR)</option>
-            <option value="JPY">Japanese Yen (JPY)</option>
-            <option value="CNY">Chinese Yuan (CNY)</option>
-            <option value="INR">Indian Rupee (INR)</option>
-            <option value="AUD">Australian Dollar (AUD)</option>
-
-            
-            <!-- Add other currencies as needed -->
-        </select>
-        <button onclick="fetchRates()">Get Rates</button>
-        <div class="output" id="output"></div>
-        <h2>Convert Currencies</h2>
-        <select id="fromCurrency">
-            <option value="PKR">Pakistani Rupee (PKR)</option>
-            <option value="GBP">British Pound (GBP)</option>
-            <option value="USD">US Dollar (USD)</option>
-            <option value="AED">UAE Dirham (AED)</option>
-            <option value="EUR">Euro (EUR)</option>
-            <option value="JPY">Japanese Yen (JPY)</option>
-            <option value="CNY">Chinese Yuan (CNY)</option>
-            <option value="INR">Indian Rupee (INR)</option>
-            <option value="AUD">Australian Dollar (AUD)</option>
-
-            
-            <!-- Add other currencies as needed -->
-        </select>
-        <select id="toCurrency">
-            <option value="USD">US Dollar (USD)</option>
-            <option value="PKR">Pakistani Rupee (PKR)</option>
-            <option value="GBP">British Pound (GBP)</option>
-            <option value="AED">UAE Dirham (AED)</option>
-            <option value="EUR">Euro (EUR)</option>
-            <option value="JPY">Japanese Yen (JPY)</option>
-            <option value="CNY">Chinese Yuan (CNY)</option>
-            <option value="INR">Indian Rupee (INR)</option>
-            <option value="AUD">Australian Dollar (AUD)</option>
-
-            <!-- Add other currencies as needed -->
-        </select>
-        <input type="number" id="amount" placeholder="Amount (optional)">
-        <button onclick="convertCurrency()">Convert</button>
-        <div class="conversion-output" id="conversion-output"></div>
+        <div class="form-container">
+            <div class="form-header">
+                <h2>Login</h2>
+            </div>
+            <form id="loginForm" class="form-field">
+                <label for="loginUsername">Username, Email or Phone:</label>
+                <input type="text" id="loginUsername" name="Username" required>
+                <label for="loginPassword">Password:</label>
+                <div class="password-toggle">
+                    <input type="password" id="loginPassword" name="Password" required>
+                    <span class="toggle-icon" onclick="togglePasswordVisibility('loginPassword')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/></svg>
+                    </span>
+                </div>
+                <button type="submit">Login</button>
+                <p id="loginError" class="error"></p>
+                <p id="loginSuccess" class="success"></p>
+                <p><a href="forgot-password-page">Forgot Password?</a></p>
+            </form>
+        </div>
+        <div class="form-container">
+            <div class="form-header">
+                <h2>Sign Up</h2>
+            </div>
+            <form id="signupForm" class="form-field">
+                <label for="signupFirstName">First Name:</label>
+                <input type="text" id="signupFirstName" name="First" required>
+                <label for="signupLastName">Last Name:</label>
+                <input type="text" id="signupLastName" name="Last">
+                <label for="signupAge">Age:</label>
+                <input type="number" id="signupAge" name="Age" required>
+                <label for="signupEmail">Email:</label>
+                <input type="email" id="signupEmail" name="Email" required>
+                <label for="signupPhone">Phone:</label>
+                <input type="tel" id="signupPhone" name="Phone" pattern="(\d{4}-\d{7}|\d{11})" placeholder="0300-1234567" required>
+                <label for="signupUsername">Username:</label>
+                <input type="text" id="signupUsername" name="User" minlength="4" required>
+                <label for="signupPassword">Password:</label>
+                <div class="password-toggle">
+                    <input type="password" id="signupPassword" name="Pswd" required>
+                    <span class="toggle-icon" onclick="togglePasswordVisibility('signupPassword')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/></svg>
+                    </span>
+                </div>
+                <label for="signupRePassword">Re-enter Password:</label>
+                <div class="password-toggle">
+                    <input type="password" id="signupRePassword" name="RePswd" required>
+                    <span class="toggle-icon" onclick="togglePasswordVisibility('signupRePassword')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/></svg>
+                    </span>
+                </div>
+                <button type="submit">Sign Up</button>
+                <p id="signupError" class="error"></p>
+                <p id="signupSuccess" class="success"></p>
+            </form>
+        </div>
     </div>
     <script>
-        async function fetchRates() {
-            const currency = document.getElementById('currency').value.toUpperCase();
-            const url = `/api/${currency}`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                let output = `<h2>Rates for ${currency}</h2>`;
-                output += `<table>`;
-                output += `<tr><th>Currency</th><th>Rate</th></tr>`;
-                for (const [currencyCode, rate] of Object.entries(data.conversion_rates)) {
-                    output += `<tr><td>${currencyCode}</td><td>${rate}</td></tr>`;
-                }
-                output += `</table>`;
-
-                document.getElementById('output').innerHTML = output;
-            } catch (error) {
-                console.error('Error:', error);
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling.querySelector('svg');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('viewBox', '0 0 24 24');
+                icon.innerHTML = '<path d="M5 12l5.5 5.5L17 12z"/>';
+            } else {
+                input.type = 'password';
+                icon.setAttribute('viewBox', '0 0 24 24');
+                icon.innerHTML = '<path d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/>';
             }
         }
 
-        async function convertCurrency() {
-            const fromCurrency = document.getElementById('fromCurrency').value.toUpperCase();
-            const toCurrency = document.getElementById('toCurrency').value.toUpperCase();
-            let amount = document.getElementById('amount').value;
-            
-            // Check if amount is not a valid number or less than 1
-            if (isNaN(parseFloat(amount)) || parseFloat(amount) < 1) {
-                document.getElementById('conversion-output').innerHTML = "<p>Please enter a valid amount (greater than or equal to 1).</p>";
-                return;
-            }
-    
-            const url = `/api/${fromCurrency}/${toCurrency}/${amount}`;
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const jsonData = Object.fromEntries(formData.entries());
 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    displayResponse(data.error, true);
+                } else {
+                    displayResponse('Login successful.', false);
+                    // Optionally, perform actions like hiding the login form, updating UI, etc.
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                displayResponse('An unexpected error occurred. Please try again later.', true);
+            });
+        });
 
-        let output = `<h2>Conversion Result</h2>`;
-        output += `<p>${amount} ${fromCurrency} = ${data.conversion_result} ${toCurrency}</p>`;
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const jsonData = Object.fromEntries(formData.entries());
 
-        document.getElementById('conversion-output').innerHTML = output;
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
+            fetch('/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    displayResponse(data.error, true);
+                } else {
+                    displayResponse('Sign up successful.', false);
+                    // Optionally, perform actions like hiding the sign up form, updating UI, etc.
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                displayResponse('An unexpected error occurred. Please try again later.', true);
+            });
+        });
 
+        function displayResponse(message, isError) {
+            const responseContainer = document.getElementById('responseContainer');
+            const responseContent = document.getElementById('responseContent');
+
+            responseContent.innerText = message;
+            responseContent.className = isError ? 'error' : 'success';
+            responseContainer.style.display = 'block';
+        }
     </script>
 </body>
 </html>
