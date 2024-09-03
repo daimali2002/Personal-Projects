@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #003366, #0288d1);
+            background-size: 200% 200%;
+            animation: gradient 1s ease forwards;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            background-color: #003366;
+            color: #ffffff;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 5px solid #0288d1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .header button {
+            position: absolute;
+            top: 15px;
+            right: 155px; /* Adjusted position for logout button */
+            padding: 8px 16px;
+            background-color: #0288d1;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .header button:hover {
+            background-color: #0277bd;
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .header button:active {
+            background-color: #01579b;
+            transform: scale(0.98);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .header .logout-button {
+            position: absolute;
+            top: 15px;
+            right: 30px; /* Adjusted position */
+            padding: 8px 16px;
+            background-color: #d32f2f; /* Red color for logout */
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .header .logout-button:hover {
+            background-color: #c62828;
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .header .logout-button:active {
+            background-color: #b71c1c;
+            transform: scale(0.98);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .product-card {
+            flex: 1 1 calc(25% - 30px);
+            box-sizing: border-box;
+            padding: 15px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #0288d1;
+            transition: width 0.3s ease;
+        }
+
+        .product-card:hover::before {
+            width: 100%;
+        }
+
+        .product-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            background-color: #f9f9f9;
+        }
+
+        .product-card h3 {
+            margin-top: 0;
+            color: #042367;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .product-card p {
+            margin: 8px 0;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .product-card .price {
+            font-weight: bold;
+            color: #007700;
+            font-size: 1.1em;
+        }
+
+        .product-card .price .original-price {
+            text-decoration: line-through;
+            color: #a8a6a6;
+            font-size: 0.9em;
+            display: inline;
+        }
+
+        .product-card .price .discounted-price {
+            color: #d32f2f;
+            font-size: 1.1em;
+            display: inline;
+        }
+
+        .product-card .rating {
+            color: #009900;
+            font-size: 0.9em;
+        }
+
+        .stars {
+            display: inline-block;
+            font-size: 0;
+        }
+
+        .stars::before {
+            content: '★★★★★';
+            font-size: 1.1em;
+            background: linear-gradient(90deg, #ffd700 var(--rating), #ddd var(--rating));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .product-card .stock {
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .stock.in-stock {
+            color: #007700; /* Green for in stock */
+        }
+
+        .stock.low-stock {
+            color: #ffa500; /* Orange for low stock */
+        }
+
+        .stock.out-of-stock {
+            color: #d32f2f; /* Red for out of stock */
+        }
+        .category-buttons-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .category-buttons-container button {
+            padding: 10px 20px;
+            background-color: #0288d1;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .category-buttons-container button:hover {
+            background-color: #0277bd;
+            transform: scale(1.05);
+        }
+
+        .category-buttons-container button:active {
+            background-color: #01579b;
+            transform: scale(0.98);
+        }
+                .category-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .category-heading {
+            font-size: 1.2em;
+            color: #ffffff;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+    
+
+
+
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        Our Products
+        <button onclick="window.location.href='/cart'"> My Cart</button>
+        <button class="logout-button" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="category-container">
+        <span class="category-heading">Categories:</span>
+        <div id="categoryButtonsContainer" class="category-buttons-container">
+            <!-- Other category buttons will be inserted here -->
+        </div>
+    </div>
+    
+    
+
+    <div class="product-container" id="productContainer">
+        <!-- Products will be inserted here -->
+    </div>
+
+    
+    
+
+    <script>
+        function logout() {
+            sessionStorage.removeItem('cart');
+            sessionStorage.removeItem('user_id');
+            window.location.href = '/';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!sessionStorage.getItem('user_id')) {
+                const logoutButton = document.querySelector('.logout-button');
+                document.querySelector('.logout-button').textContent = 'Login/SignUp';
+                logoutButton.style.backgroundColor = '#388e3c'; // Green color
+                const Button1 = document.querySelector('.header button');
+                Button1.style.marginRight = '74px'; // Margin left
+                logoutButton.onclick = () => window.location.href = '/';
+            }
+    fetch('/getall')
+        .then(response => response.json())
+        .then(data => {
+            const products = data.PRODUCTS;
+
+            const categories = [...new Set(products.map(product => product.CATEGORY))];
+            const container = document.getElementById('productContainer');
+            const categoryButtonsContainer = document.getElementById('categoryButtonsContainer');
+
+            // Create category buttons
+            const allButton = document.createElement('button');
+            allButton.textContent = 'All';
+            allButton.addEventListener('click', () => filterProductsByCategory('All'));
+            categoryButtonsContainer.appendChild(allButton);
+
+            categories.forEach(category => {
+                const button = document.createElement('button');
+                button.textContent = category;
+                button.addEventListener('click', () => filterProductsByCategory(category));
+                categoryButtonsContainer.appendChild(button);
+            });
+
+            function filterProductsByCategory(category) {
+                const filteredProducts = category === 'All' ? products : products.filter(product => product.CATEGORY === category);
+                container.innerHTML = '';
+                filteredProducts.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
+                    let stockMessage;
+                    let stockClass;
+                    if (product.STOCK > 10) {
+                        stockMessage = 'In Stock';
+                        stockClass = 'in-stock';
+                    } else if (product.STOCK > 0 && product.STOCK <= 10) {
+                        stockMessage = `${product.STOCK} Items Left`;
+                        stockClass = 'low-stock';
+                    } else {
+                        stockMessage = 'Out of Stock';
+                        stockClass = 'out-of-stock';
+                    }
+                    let originalPrice = parseFloat(product.PRICE);
+                    let discountedPrice = originalPrice - (originalPrice * product.DISCOUNT / 100);
+
+                    productCard.innerHTML = `
+                        <h3>${product.TITLE}</h3>
+                        <p><strong>Brand:</strong> ${product.BRAND || 'N/A'}</p>
+                        <p><strong>Category:</strong> ${product.CATEGORY}</p>
+                        <p class="price">
+                            ${product.DISCOUNT > 0 ? `<span class="original-price">$${originalPrice.toFixed(2)}</span> ` : ''}
+                            <span class="discounted-price">$${discountedPrice.toFixed(2)}</span>
+                        </p>
+                       <p class="stock ${stockClass}">${stockMessage}</p>
+                        <p class="stars" style="--rating: ${product.RATING / 5 * 100}%"></p>
+                    `;
+
+                    productCard.addEventListener('click', () => {
+                        window.location.href = `product-details?ID=${product.ID}`;
+                    });
+
+                    container.appendChild(productCard);
+                });
+            }
+            
+            // Initial display
+            filterProductsByCategory('All');
+        })
+        .catch(error => {
+            console.error('Error fetching products:', error);
+        });
+});
+
+
+    </script>
+</body>
+</html>

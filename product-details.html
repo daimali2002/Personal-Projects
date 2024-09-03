@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #e0eaff, #003366, #0288d1);
+            background-size: 200% 200%;
+            animation: gradient 1s ease forwards;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        .product-details {
+            width: 90%;
+            max-width: 800px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin: 20px auto;
+        }
+
+        .product-details h2 {
+            margin-top: 0;
+            color: #003366;
+            font-size: 2em;
+            font-weight: 600;
+        }
+
+        .product-details p {
+            margin: 10px 0;
+            font-size: 1em;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .product-details .price {
+            font-weight: bold;
+            color: #007700;
+            font-size: 1.3em;
+        }
+
+        .product-details .price .original-price {
+            text-decoration: line-through;
+            color: #a8a6a6;
+            font-size: 1.1em;
+            display: inline;
+        }
+
+        .product-details .price .discounted-price {
+            color: #d32f2f;
+            font-size: 1.3em;
+            display: inline;
+        }
+
+        .product-details .rating {
+            color: #009900;
+            font-size: 1em;
+        }
+        .product-card .stock {
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .stock.in-stock {
+            color: #007700; /* Green for in stock */
+        }
+
+        .stock.low-stock {
+            color: #ffa500; /* Orange for low stock */
+        }
+
+        .stock.out-of-stock {
+            color: #d32f2f; /* Red for out of stock */
+        }
+
+        .quantity-container {
+            margin: 20px 0;
+        }
+
+        .quantity-container input {
+            width: 60px;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .add-to-cart-button {
+            padding: 15px 30px;
+            background-color: #0288d1;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .add-to-cart-button:hover {
+            background-color: #0277bd;
+        }
+
+        .message {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #007700;
+            display: none;
+        }
+
+        .error-message {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #d32f2f;
+            display: none;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: #ffffff;
+            color: #1260dc;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .back-button:hover {
+            background: #0288d1;
+            transform: scale(1.05);
+        }
+
+        .cart-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #4caf50; /* Green color */
+            color: #ffffff;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .cart-button:hover {
+            background: #388e3c;
+            transform: scale(1.05);
+        }
+        .stars {
+            display: inline-block;
+            font-size: 0;
+        }
+
+        .stars::before {
+            content: '★★★★★';
+            font-size: 1.1em;
+            background: linear-gradient(90deg, #ffd700 var(--rating), #ddd var(--rating));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='/dashboard'">Back to All Products</button>
+    <button class="cart-button" onclick="window.location.href='/cart'">View Cart</button>
+    <div class="product-details" id="productDetails">
+        <!-- Product details will be inserted here -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('ID');
+
+            fetch(`/getone?ID=${productId}`)
+                .then(response => response.json())
+                .then(product => {
+                    let stockMessage;
+                    let stockClass;
+                    if (product.STOCK > 10) {
+                        stockMessage = 'In Stock';
+                        stockClass = 'in-stock';
+                    } else if (product.STOCK > 0 && product.STOCK <= 10) {
+                        stockMessage = `${product.STOCK} Items Left`;
+                        stockClass = 'low-stock';
+                    } else {
+                        stockMessage = 'Out of Stock';
+                        stockClass = 'out-of-stock';
+                    }
+
+                    const container = document.getElementById('productDetails');
+                    container.innerHTML = `
+                        <h2>${product.TITLE}</h2>
+                        <p><strong>Brand:</strong> ${product.BRAND || 'N/A'}</p>
+                        <p><strong>Category:</strong> ${product.CATEGORY}</p>
+                        <p><strong>Description:</strong> ${product.DESCRIPTION}</p>
+                        <p class="price">
+                            ${product.DISCOUNT > 0 ? `<span class="original-price">$${product.PRICE}</span> ` : ''}
+                            <span class="discounted-price">$${product.AMOUNT_AFTER_DISCOUNT}</span>
+                        </p>
+                        <p><strong>Discount:</strong> ${product.DISCOUNT}%</p>
+                        <p class="stock ${stockClass}">${stockMessage}</p>
+                        <p class="stars" style="--rating: ${product.RATING / 5 * 100}%"></p>
+                        ${product.STOCK > 0 ? `
+                        <div class="quantity-container">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="${product.STOCK}" step="1" required>
+                        </div>
+                        <button class="add-to-cart-button" onclick="addToCart(${product.ID}, \`${product.TITLE}\`, \`${product.PRICE}\`, \`${product.AMOUNT_AFTER_DISCOUNT}\`, ${product.STOCK})">Add to Cart</button>
+                        ` : ''}
+                        <p class="message" id="message">Added to cart!</p>
+                        <p class="error-message" id="errorMessage">Cannot add more than available stock! You May Already have this item in your cart!</p>
+                        <p class="error-message" id="errorMessage2">Input a Valid number</p>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Error fetching product details:', error);
+                });
+        });
+
+        function addToCart(productId, title, price, amountAfterDiscount, stock) {
+            const quantity = parseFloat(document.getElementById('quantity').value)
+            const cart = JSON.parse(sessionStorage.getItem('cart') || '{}');
+
+            const existingQuantity = cart[productId] ? cart[productId].quantity : 0;
+
+
+            if (!Number.isInteger(quantity || quantity <= 0)) {
+                const errorMessageElement = document.getElementById('errorMessage2');
+                if (errorMessageElement) {
+                    errorMessageElement.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessageElement.style.display = 'none';
+                    }, 5000);
+                }
+                return;
+            }
+
+        
+            if (quantity + existingQuantity > stock) {
+                // Show error message if quantity exceeds stock
+                const errorMessageElement = document.getElementById('errorMessage');
+                if (errorMessageElement) {
+                    errorMessageElement.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessageElement.style.display = 'none';
+                    }, 5000); // Hide message after 2 seconds
+                }
+                return;
+            }
+
+            if (!cart[productId]) {
+                cart[productId] = { title, price, amountAfterDiscount, quantity };
+            } else {
+                cart[productId].quantity += quantity;
+            }
+
+            sessionStorage.setItem('cart', JSON.stringify(cart));
+
+            // Display success message
+            const messageElement = document.getElementById('message');
+            if (messageElement) {
+                messageElement.style.display = 'block';
+                setTimeout(() => {
+                    messageElement.style.display = 'none';
+                }, 1000); // Hide message after 0.5 seconds
+            }
+        }
+    </script>
+</body>
+</html>

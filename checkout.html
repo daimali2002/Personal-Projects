@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(100deg, #0278b8, #003e62);
+            background-size: 150% 150%;
+            animation: gradientAnimation 5s ease infinite;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            background-color: #003366;
+            color: #ffffff;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            border-bottom: 5px solid #0288d1;
+        }
+
+        .checkout-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .checkout-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 25px; /* Adds gap between items and inputs */
+        }
+
+        .checkout-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            position: relative;
+        }
+
+        .checkout-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkout-item h3 {
+            margin: 0;
+            color: #042367;
+            flex: 1;
+        }
+
+        .checkout-item .price {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            flex: 1;
+            color: #dc0808;
+            margin-left: 20px;
+        }
+
+        .checkout-item .quantity {
+            font-size: 1.2em;
+            font-weight: bold;
+            width: 50px;
+            text-align: center;
+        }
+
+        .checkout-inputs label {
+            font-size: 1.1em;
+            color: #071035ee;
+        }
+
+        .checkout-inputs input {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 1.2em;
+        }
+
+        .checkout-button {
+            padding: 15px 30px;
+            background-color: #4caf50; /* Green color */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            width: 12%;
+        }
+
+        .checkout-button:hover {
+            background-color: #388e3c;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: #ffffff;
+            color: #1260dc;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .back-button:hover {
+            background: #0288d1;
+            transform: scale(1.05);
+        }
+        .login-signup-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 30px;
+            background-color: #388e3c;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            margin-left: 10px;
+            display: none; /* Initially hidden */
+    
+        }
+
+        .login-signup-button:hover {
+            background-color: #2e7d32;
+        }
+
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='/cart'">Back to Cart</button>
+    
+
+    <div class="header">
+        Checkout
+    </div>
+    <button class="login-signup-button" id="loginSignupButton" onclick="window.location.href='/'">Login/Signup</button>
+
+   
+
+    <div class="checkout-container" id="checkoutContainer">
+        <!-- Checkout items will be inserted here -->
+    </div>
+
+    <div class="checkout-inputs" id="checkoutInputs">
+        <!-- Address, phone, and email inputs will be added here -->
+    </div>
+
+    <button class="checkout-button" id="confirmCheckout">Confirm Purchase</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+           
+            const cart = JSON.parse(sessionStorage.getItem('cart') || '{}');
+            const userId = sessionStorage.getItem('user_id');
+            const container = document.getElementById('checkoutContainer');
+            const inputsContainer = document.getElementById('checkoutInputs');
+            const confirmButton = document.getElementById('confirmCheckout');
+
+
+            
+
+            if (Object.keys(cart).length === 0) {
+                container.innerHTML = '<p>Your cart is empty.</p>';
+                confirmButton.style.display = 'none';
+                return;
+            }
+
+            Object.keys(cart).forEach(id => {
+                const item = cart[id];
+                const checkoutItem = document.createElement('div');
+                checkoutItem.className = 'checkout-item';
+
+                checkoutItem.innerHTML = `
+                    <div>
+                        <h3>${item.title}</h3>
+                    </div>
+                    <div class="price">
+                        <span>$${(parseFloat(item.amountAfterDiscount) || parseFloat(item.price)).toFixed(2)}</span>
+                    </div>
+                    <div class="quantity">
+                        ${item.quantity}
+                    </div>
+                `;
+
+                container.appendChild(checkoutItem);
+            });
+
+            if (!userId) {
+                const userId = sessionStorage.getItem('user_id');
+                const loginSignupButton = document.getElementById('loginSignupButton');
+                loginSignupButton.style.display = 'block'; // Show the button if the user is not logged in
+
+                inputsContainer.innerHTML = `
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" placeholder="Enter your address" required>
+                    <label for="phone">Phone:</label>
+                    <input type="text" id="phone" name="phone" placeholder="03XX-XXXXXXX" required>
+                `;
+            }
+
+            confirmButton.addEventListener('click', function() {
+                let payload;
+
+                if (userId) {
+                    const products = Object.keys(cart).map(id => ({
+                        product_id: parseInt(id),
+                        quantity: cart[id].quantity
+                    }));
+
+                    payload = {
+                        Products: products,
+                        User: userId
+                    };
+                } else {
+                    const email = document.getElementById('email').value;
+                    const address = document.getElementById('address').value;
+                    const phone = document.getElementById('phone').value;
+
+                    if (!email || !address || !phone) {
+                        alert('Please enter email, address, and phone number.');
+                        return;
+                    }
+
+                    const products = Object.keys(cart).map(id => ({
+                        product_id: parseInt(id),
+                        quantity: cart[id].quantity
+                    }));
+
+                    payload = {
+                        Email: email,
+                        Address: address,
+                        Phone: phone,
+                        Products: products
+                    };
+                }
+
+                fetch('http://127.0.0.1:5000/buy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Purchase failed. ' + data.error);
+                        console.log(JSON.stringify(payload));
+                    } else {
+                        sessionStorage.removeItem('cart'); // Clear cart after purchase
+                        sessionStorage.setItem('orderDetails', JSON.stringify(payload));
+                        console.log(JSON.stringify(payload));
+                        window.location.href = '/make-payment'; // Redirect to order details page
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

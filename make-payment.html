@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Payment</title>
+    <style>
+       body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(100deg, #0278b8, #003e62);
+    background-size: 150% 150%;
+    animation: gradientAnimation 5s ease infinite;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    color: #ffffff;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.header {
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    background-color: #003366;
+    color: #ffffff;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    border-bottom: 5px solid #0288d1;
+}
+
+.payment-container {
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    color: #003366;
+}
+
+.payment-option {
+    display: flex;
+    justify-content: space-around; /* Space evenly */
+    width: 100%;
+    gap: 15px;
+}
+
+.payment-option button {
+    flex: 1; /* Allow buttons to grow equally */
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2em;
+    cursor: pointer;
+    background: linear-gradient(145deg, #4e9dec, #0077c0); /* Gradient background */
+    color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.payment-option button:hover {
+    background: linear-gradient(145deg, #0288d1, #005b99); /* Darker gradient on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Add shadow on hover */
+    transform: translateY(-2px); /* Lift effect on hover */
+}
+
+.form-container {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 20px;
+}
+
+.form-container label {
+    font-weight: bold;
+    width: 80%;
+    text-align: left;
+    color: #003366;
+}
+
+.form-container input {
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 80%;
+    font-size: 1em;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle inner shadow */
+}
+
+.submit-button {
+    padding: 15px 30px;
+    background: linear-gradient(145deg, #4caf50, #388e3c); /* Gradient background */
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.2em;
+    text-align: center;
+    transition: all 0.3s ease;
+    width: 12%;
+    margin-top: 20px;
+}
+
+.submit-button:hover {
+    background: linear-gradient(145deg, #388e3c, #2c6c2f); /* Darker gradient on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Add shadow on hover */
+    transform: translateY(-2px); /* Lift effect on hover */
+}
+
+.overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .overlay-content {
+            text-align: center;
+            font-size: 1.5em;
+        }
+        select {
+            width: 85%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            font-size: 16px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            appearance: none; /* Remove default dropdown arrow */
+            -webkit-appearance: none; /* Remove default dropdown arrow for Safari */
+            -moz-appearance: none; /* Remove default dropdown arrow for Firefox */
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position-x: 99%;
+            background-position-y: 50%;
+        }
+
+        select:hover {
+            border-color: #888;
+            background-color: #f1f1f1;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #555;
+            box-shadow: 0 0 5px rgba(85, 85, 85, 0.5);
+        }
+
+        option {
+            padding: 10px;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        Make Payment
+    </div>
+
+    <div class="payment-container">
+        <h2>Select Payment Method</h2>
+        <div class="payment-option">
+            <button onclick="showForm('bank')">Bank Payment</button>
+            <button onclick="showForm('card')">Card Payment</button>
+        </div>
+        
+        <div class="form-container" id="bank-form">
+            <label for="bank-select">Select Bank</label>
+                <select id="bank-code">
+                    <option value="12">Summit Bank</option>
+                    <option value="11">Demo Bank</option>
+                    <option value="2">Bank Islami</option>
+                    <option value="3">NRSP</option>
+                    <option value="5">JS Bank</option>
+                    <option value="27">Bank al Habib</option>
+                    <option value="30">MCB</option>
+                    <option value="10">Habib Metro Bank</option>
+                    <option value="22">Bank of Punjab</option>
+                    <option value="23">Samba Bank</option>
+                    <option value="25">Meezan Bank</option>
+                    <option value="42">Habib Bank Limited</option>
+                </select>
+            <label for="account-number">Account Number</label>
+            <input type="text" id="account-number" placeholder="Enter Account Number" required>
+            <label for="cnic">CNIC</label>
+            <input type="text" id="cnic" placeholder="Enter CNIC" required>
+        </div>
+    
+        <div class="form-container" id="card-form">
+            <label for="card-number">Card Number</label>
+            <input type="text" id="card-number" placeholder="Enter Card Number" required pattern="\d{16}">
+            <label for="expiry-month">Expiry Month</label>
+            <input type="text" id="expiry-month" placeholder="MM" required pattern="0[1-9]|1[0-2]">
+            <label for="expiry-year">Expiry Year</label>
+            <input type="text" id="expiry-year" placeholder="YY" required pattern="\d{2}">
+            <label for="cvv">CVV</label>
+            <input type="text" id="cvv" placeholder="Enter CVV" required pattern="\d{3}">
+        </div>
+    </div>
+    
+        
+
+        <button class="submit-button" onclick="submitPayment()">Submit Payment</button>
+    </div>
+
+    <div class="overlay" id="loading-overlay">
+        <div class="overlay-content">
+            Processing Payment...
+        </div>
+    </div>
+
+    <script>
+       
+        function validateCardExpiry(month, year) {
+            const today = new Date();
+            const expMonth = parseInt(month, 10);
+            const expYear = parseInt(year, 10) + 2000; // Convert YY to YYYY
+            const expDate = new Date(expYear, expMonth - 1);
+
+            return expDate >= today;
+        }
+        window.onload = function() {
+            document.getElementById('bank-form').style.display = 'none';
+            document.getElementById('card-form').style.display = 'none';
+            document.querySelector('.submit-button').style.display = 'none'; // Hide submit button initially
+        };
+
+        function showForm(type) {
+            document.getElementById('bank-form').style.display = 'none';
+            document.getElementById('card-form').style.display = 'none';
+            document.querySelector('.submit-button').style.display = 'none'; // Hide submit button initially
+
+            if (type === 'bank') {
+                document.getElementById('bank-form').style.display = 'flex';
+                document.querySelector('.submit-button').style.display = 'block'; // Show submit button
+            } else if (type === 'card') {
+                document.getElementById('card-form').style.display = 'flex';
+                document.querySelector('.submit-button').style.display = 'block'; // Show submit button
+            }
+
+        }
+        function showLoadingOverlay() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.querySelector('.payment-container').style.pointerEvents = 'none'; // Block other interactions
+        }
+
+        function hideLoadingOverlay() {
+            document.getElementById('loading-overlay').style.display = 'none';
+            document.querySelector('.payment-container').style.pointerEvents = 'auto'; // Re-enable interactions
+        }
+
+
+        function submitPayment() {
+            showLoadingOverlay();
+            let url = 'http://127.0.0.1:5000/otp';
+            let params = {
+                basket_id: 'ITEM-001',
+                txnamt: sessionStorage.getItem("total-price").replace(/[^0-9.]/g, ''),
+                order_date: new Date().toISOString().split('T')[0],
+                customer_mobile_no: '923000000000',
+                customer_email_address: 'customer@gmail.com',
+                currency_code: 'PKR'
+            };
+
+            // Determine account_type_id based on form details
+            if (document.getElementById('card-form').style.display === 'flex') {
+                const cardNumber = document.getElementById('card-number').value;
+                const expiryMonth = document.getElementById('expiry-month').value;
+                const expiryYear = document.getElementById('expiry-year').value;
+                const cvv = document.getElementById('cvv').value;
+
+                if (!validateCardNumber(cardNumber)) {
+                    alert('Card number must be 16 digits.');
+                    hideLoadingOverlay();
+                    return;
+                }
+
+                if (!validateCardExpiry(expiryMonth, expiryYear)) {
+                    alert('Card is expired or invalid expiry date.');
+                    hideLoadingOverlay();
+                    return;
+                }
+
+                if (!validateCVV(cvv)) {
+                    alert('CVV must be a 3-digit number.');
+                    hideLoadingOverlay();
+                    return;
+                }
+
+                params.account_type_id = 1;
+                params.card_number = cardNumber;
+                params.expiry_month = expiryMonth;
+                params.expiry_year = expiryYear;
+                params.cvv = cvv;
+            } else if (document.getElementById('bank-form').style.display === 'flex') {
+                const bankCode = document.getElementById('bank-code').value;
+                const accountNumber = document.getElementById('account-number').value;
+                const cnic = document.getElementById('cnic').value;
+
+                if (!validateAccountNumber(accountNumber)) {
+                    alert('Account number must be 14 digits.');
+                    hideLoadingOverlay();
+                    return;
+                }
+
+                if (!validateCNIC(cnic)) {
+                    alert('CNIC must be 13 digits.');
+                    hideLoadingOverlay();
+                    return;
+                }
+
+                params.account_type_id = 3;
+                params.bank_code = bankCode;
+                params.account_number = accountNumber;
+                params.cnic = cnic;
+            }
+
+            url += '?' + new URLSearchParams(params).toString();
+
+            fetch(url, { method: 'GET' })
+            .then(response => response.text()) // Get response as text
+            .then(data => {
+                const parsedData = JSON.parse(data);
+                switch (parsedData.code){
+                    case '00':
+                        if (params.account_type_id === 1) { // Card Payment
+                            document.open();
+                            document.write(parsedData.result);
+                            document.close();
+                        } else if (params.account_type_id === 3) { // Bank Payment
+                            window.location.href = '/get-otp';
+                        }
+                        break;
+                    default:
+                        hideLoadingOverlay();
+                        window.location.href = `/failure_page?error=${encodeURIComponent(parsedData.error)}`;
+                        break;
+                    }
+                hideLoadingOverlay(); // Hide loading overlay after processing
+            })
+            .catch(error => {
+                hideLoadingOverlay();
+                console.error('Error:', error);
+            });
+
+
+
+//validation funcs
+        function validateCardNumber(number) {
+            return /^\d{16}$/.test(number);
+        }
+
+        function validateCardExpiry(month, year) {
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth() + 1;
+            return (
+                /^\d{2}$/.test(month) &&
+                month >= 1 && month <= 12 &&
+                /^\d{2}$/.test(year) &&
+                (year > currentYear % 100 || (year == currentYear % 100 && month >= currentMonth))
+            );
+        }
+
+        function validateCVV(cvv) {
+            return /^\d{3}$/.test(cvv);
+        }
+
+        function validateAccountNumber(number) {
+            return /^\d{14}$/.test(number);
+        }
+
+        function validateCNIC(cnic) {
+            return /^\d{13}$/.test(cnic);
+        }
+    }
+    </script>
+</body>
+</html>

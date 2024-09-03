@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(100deg, #0278b8, #003e62);
+            background-size: 150% 150%;
+            animation: gradientAnimation 10s ease infinite;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            background-color: #003366;
+            color: #ffffff;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            border-bottom: 5px solid #0288d1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            background: #ffffff;
+            color: #1260dc;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: background 0.3s, transform 0.3s;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .back-button:hover {
+            background: #0288d1;
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .order-details-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .order-details-container h2 {
+            color: #042367;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .order-details-container p {
+            color: #071035;
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .details-table th, .details-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .details-table th {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .details-table td {
+            background-color: #fafafa;
+            color: #333;
+        }
+
+        .summary {
+            font-size: 1.3em;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary p {
+            margin: 5px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='/dashboard'">Back to Dashboard</button>
+
+    <div class="header">
+        Order Details
+    </div>
+
+    <div class="order-details-container">
+        <h2>Your Order has been placed successfully!</h2>
+        <p>Here are the details of your order:</p>
+
+        <table class="details-table">
+            <thead>
+                <tr>
+                    <th>Product Title</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody id="orderDetails">
+                <!-- Order details will be inserted here -->
+            </tbody>
+        </table>
+
+        <p id="orderAddress"></p>
+        <p id="orderPhone"></p>
+
+        <div class="summary">
+            <p id="totalPrice"></p>
+            <p id="totalDiscount"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderDetails = JSON.parse(sessionStorage.getItem('orderDetails'));
+            const detailsTable = document.getElementById('orderDetails');
+            const addressParagraph = document.getElementById('orderAddress');
+            const phoneParagraph = document.getElementById('orderPhone');
+            const totalPriceElement = document.getElementById('totalPrice');
+            const totalDiscountElement = document.getElementById('totalDiscount');
+    
+            const totalPrice = sessionStorage.getItem('total-price').replace(/[^0-9.]/g, '');
+            const totalDiscount = sessionStorage.getItem('total-discount').replace(/[^0-9.]/g, '');
+    
+            totalPriceElement.innerText = `Total Price: $${parseFloat(totalPrice).toFixed(2)}`;
+            totalDiscountElement.innerText = `Total Discount: $${parseFloat(totalDiscount).toFixed(2)}`;
+    
+            const productDetailsPromises = orderDetails.Products.map(product => 
+                fetch(`http://127.0.0.1:5000/getone?ID=${product.product_id}`)
+                    .then(response => response.json())
+                    .then(data => ({
+                        title: data.TITLE,
+                        quantity: product.quantity
+                    }))
+                    .catch(error => {
+                        console.error('Error fetching product details:', error);
+                        return { title: 'Unknown', quantity: product.quantity }; // Fallback
+                    })
+            );
+    
+            Promise.all(productDetailsPromises).then(productsWithTitle => {
+                productsWithTitle.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.title}</td>
+                        <td>${product.quantity}</td>
+                    `;
+                    detailsTable.appendChild(row);
+                });
+    
+                let userEmail;
+    
+                if (orderDetails.Address && orderDetails.Phone && orderDetails.Email) {
+                    addressParagraph.innerText = `Address: ${orderDetails.Address}`;
+                    phoneParagraph.innerText = `Phone: ${orderDetails.Phone}`;
+                    userEmail = orderDetails.Email;
+                    userAdd= orderDetails.Address;
+                    userPhone = orderDetails.Phone;
+                    sendOrderDetailsEmail(orderDetails, userEmail, productsWithTitle);
+                } else {
+                    fetch(`http://127.0.0.1:5000/user-address?ID=${orderDetails.User}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            addressParagraph.innerText = `Address: ${data.address}`;
+                            phoneParagraph.innerText = `Phone: ${data.phone}`;
+                            userEmail = data.email;
+                            userAdd= data.address;
+                            userPhone = data.phone;
+                            sendOrderDetailsEmail(orderDetails, userEmail, productsWithTitle);
+                        })
+                        .catch(error => console.error('Error fetching user details:', error));
+                }
+            });
+    
+            const sendOrderDetailsEmail = (orderDetails, userEmail, productsWithTitle) => {
+                fetch('http://127.0.0.1:5000/send-order-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        receiver: userEmail,
+                        order_details: {
+                            Products: productsWithTitle,
+                            total_price: parseFloat(totalPrice).toFixed(2),
+                            total_discount: parseFloat(totalDiscount).toFixed(2),
+                            Address:  userAdd,
+                            Phone: userPhone
+                        }
+                    })
+                })
+                .then(response => response.json())
+                .then(data => console.log('Email sent:', data))
+                .catch(error => console.error('Error sending email:', error));
+            };
+        });
+    </script>
+    
+</body>
+</html>

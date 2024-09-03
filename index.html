@@ -3,240 +3,370 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Authentication</title>
+    <title>My Shopping App</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            width: 100%;
-            max-width: 800px;
-            margin-top: 20px;
-            box-sizing: border-box;
-            padding: 20px;
-        }
-        .form-container {
-            width: 45%;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px; /* Space between forms */
-        }
-        .form-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .form-field {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        input[type="number"],
-        input[type="tel"] {
-            width: calc(100% - 30px); /* Adjust to leave space for the icon */
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            box-sizing: border-box;
-        }
-        .password-toggle {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .password-toggle input {
-            width: 100%;
-            padding-right: 40px; /* Space for the icon */
-        }
-        .password-toggle .toggle-icon {
-            position: absolute;
-            right: 10px;
-            cursor: pointer;
-            color: #888; /* Adjust color as needed */
-        }
-        button[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button[type="submit"]:hover {
-            background-color: #45a049;
-        }
-        .error {
-            color: red;
-            margin-top: 5px;
-            font-size: 14px;
-        }
-        .success {
-            color: green;
-            margin-top: 5px;
-            font-size: 14px;
-        }
-        #responseContainer {
-            width: 100%;
-            max-width: 600px;
-            margin-top: 20px;
-            padding: 10px;
-            box-sizing: border-box;
-            background-color: #f9f9f9;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            display: none; /* Initially hidden */
-        }
-        #responseContent {
-            margin: 0;
-        }
+
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, 
+            #ffffff, /* White */
+            #003366, /* Medium Blue */
+            #0288d1  /* Dark Blue */
+        );
+        background-size: 200% 200%;
+        animation: gradient 1.2s ease forwards; /* Infinite loop */
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    @keyframes gradient {
+        0% { background-position: 0% 0%; } /* Start with white */
+        100% { background-position: 100% 100%; } /* Back to white */
+    }
+
+    .main-container h1 .icon {
+    width: 40px; /* Adjust width as needed */
+    height: auto; /* Maintain aspect ratio */
+    margin-right: 10px; /* Space between icon and title */
+    vertical-align: middle; /* Aligns the icon with the text */
+}
+.main-container h2 {
+    color: #00796b; /* Change to your desired color */
+}
+
+    
+    .logo {
+        width: 120px;
+        height: auto;
+        margin-bottom: 20px;
+    }
+    
+    .main-container {
+        text-align: center;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        width: 90%; /* Adjust width to fit the page */
+        max-width: 500px; /* Restrict maximum width for better fit */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .main-container:hover {
+        transform: scale(1.02);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    }
+    
+    .main-container h1 {
+        margin-bottom: 20px;
+        color: #00796b; /* Light green color */
+    }
+    
+    .main-container button {
+        background-color: #2e7d32; /* Darker green */
+        color: white;
+        padding: 12px 24px;
+        margin: 10px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    
+    .main-container button:hover {
+        background-color: #1b5e20; /* Even darker green */
+        box-shadow: 0 6px 12px rgba(0, 128, 0, 0.3);
+        transform: scale(1.05);
+    }
+    
+    .form-container {
+        display: none;
+        width: 100%;
+        max-width: 500px; /* Adjust to fit better */
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid #81c784; /* Light green border */
+        border-radius: 15px;
+        background-color: #ffffff;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .form-container:hover {
+        transform: scale(1.02);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #00796b; /* Light green color */
+    }
+    
+    .form-field {
+        margin-bottom: 15px;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #00796b; /* Light green color */
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    textarea {
+        width: calc(100% - 20px);
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #00796b; /* Light green border */
+        border-radius: 8px;
+        box-sizing: border-box;
+        margin-bottom: 15px;
+        transition: border-color 0.3s ease;
+    }
+    
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="number"]:focus,
+    input[type="tel"]:focus,
+    textarea:focus {
+        border-color: #004d40; /* Darker green on focus */
+        box-shadow: 0 0 5px rgba(0, 77, 64, 0.5);
+    }
+    
+    .password-toggle {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    
+    .password-toggle input {
+        width: 100%;
+        padding-right: 40px;
+    }
+    
+    .password-toggle .toggle-icon {
+        position: absolute;
+        right: 10px;
+        cursor: pointer;
+        color: #00796b; /* Light green color */
+    }
+    
+    button[type="submit"] {
+        margin-top: 20px;
+        background-color: #2e7d32; /* Darker green */
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    
+    button[type="submit"]:hover {
+        background-color: #1b5e20; /* Even darker green */
+        box-shadow: 0 6px 12px rgba(0, 128, 0, 0.3);
+        transform: scale(1.05);
+    }
+    
+    .error {
+        color: red;
+        margin-top: 5px;
+        font-size: 14px;
+    }
+    
+    .success {
+        color: green;
+        margin-top: 5px;
+        font-size: 14px;
+    }
+    
+    #responseContainer {
+        width: 100%;
+        max-width: 500px; /* Adjust to fit better */
+        margin-top: 20px;
+        padding: 10px;
+        box-sizing: border-box;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        display: none;
+    }
+    
+    #responseContent {
+        margin: 0;
+    }
+    
+    .forgot-password-btn {
+        background-color: #d32f2f;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        margin-top: 10px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    
+    .forgot-password-btn:hover {
+        background-color: #c62828;
+        transform: scale(1.05);
+    }
+    
+
+
+        
+
     </style>
 </head>
 <body>
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo" style="width: 400px; height: auto;">
+    <div class="main-container">
+        <h1><img src="{{ url_for('static', filename='images/icon.png') }}" alt="Icon" class="icon"> My Shopping App</h1>
+        <h2>Welcome</h2>
+        <button onclick="showForm('signup')">Sign Up</button>
+        <button onclick="showForm('login')">Login</button>
+        <button onclick="continueAsGuest()">Continue As Guest</button>
+    </div>
     <div id="responseContainer">
         <div id="responseContent" class="error"></div>
     </div>
-    <div class="container">
-        <div class="form-container">
-            <div class="form-header">
-                <h2>Login</h2>
-            </div>
-            <form id="loginForm" class="form-field">
-                <label for="loginUsername">Username, Email or Phone:</label>
-                <input type="text" id="loginUsername" name="Username" required>
-                <label for="loginPassword">Password:</label>
-                <div class="password-toggle">
-                    <input type="password" id="loginPassword" name="Password" required>
-                    <span class="toggle-icon" onclick="togglePasswordVisibility('loginPassword')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/></svg>
-                    </span>
-                </div>
-                <button type="submit">Login</button>
-                <p id="loginError" class="error"></p>
-                <p id="loginSuccess" class="success"></p>
-                <p><a href="forgot-password-page">Forgot Password?</a></p>
-            </form>
+    <div id="signupForm" class="form-container">
+        <div class="form-header">
+            <h2>Sign Up</h2>
         </div>
-        <div class="form-container">
-            <div class="form-header">
-                <h2>Sign Up</h2>
+        <form id="signupFormContent" class="form-field">
+            <label for="signupFirstName">First Name:</label>
+            <input type="text" id="signupFirstName" name="First" required>
+            <label for="signupLastName">Last Name:</label>
+            <input type="text" id="signupLastName" name="Last">
+            <label for="signupAge">Age:</label>
+            <input type="number" id="signupAge" name="Age" required>
+            <label for="signupEmail">Email:</label>
+            <input type="email" id="signupEmail" name="Email" required>
+            <label for="signupPhone">Phone:</label>
+            <input type="tel" id="signupPhone" name="Phone" pattern="(\d{4}-\d{7}|\d{11})" placeholder="0300-1234567" required>
+            <label for="signupAddress">Address:</label>
+            <textarea id="signupAddress" name="Address" rows="1"></textarea>
+            <label for="signupUsername">Username:</label>
+            <input type="text" id="signupUsername" name="User" minlength="4" required>
+            <label for="signupPassword">Password:</label>
+            <div class="password-toggle">
+                <input type="password" id="signupPassword" name="Pswd" required>
+                <span class="toggle-icon" onclick="togglePasswordVisibility('signupPassword')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/></svg>
+                </span>
             </div>
-            <form id="signupForm" class="form-field">
-                <label for="signupFirstName">First Name:</label>
-                <input type="text" id="signupFirstName" name="First" required>
-                <label for="signupLastName">Last Name:</label>
-                <input type="text" id="signupLastName" name="Last">
-                <label for="signupAge">Age:</label>
-                <input type="number" id="signupAge" name="Age" required>
-                <label for="signupEmail">Email:</label>
-                <input type="email" id="signupEmail" name="Email" required>
-                <label for="signupPhone">Phone:</label>
-                <input type="tel" id="signupPhone" name="Phone" pattern="(\d{4}-\d{7}|\d{11})" placeholder="0300-1234567" required>
-                <label for="signupUsername">Username:</label>
-                <input type="text" id="signupUsername" name="User" minlength="4" required>
-                <label for="signupPassword">Password:</label>
-                <div class="password-toggle">
-                    <input type="password" id="signupPassword" name="Pswd" required>
-                    <span class="toggle-icon" onclick="togglePasswordVisibility('signupPassword')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/></svg>
-                    </span>
-                </div>
-                <label for="signupRePassword">Re-enter Password:</label>
-                <div class="password-toggle">
-                    <input type="password" id="signupRePassword" name="RePswd" required>
-                    <span class="toggle-icon" onclick="togglePasswordVisibility('signupRePassword')">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/></svg>
-                    </span>
-                </div>
-                <button type="submit">Sign Up</button>
-                <p id="signupError" class="error"></p>
-                <p id="signupSuccess" class="success"></p>
-            </form>
+            <label for="signupRePassword">Re-enter Password:</label>
+            <div class="password-toggle">
+                <input type="password" id="signupRePassword" name="RePswd" required>
+                <span class="toggle-icon" onclick="togglePasswordVisibility('signupRePassword')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/></svg>
+                </span>
+            </div>
+            <button type="submit">Sign Up</button>
+            <p id="signupError" class="error"></p>
+            <p id="signupSuccess" class="success"></p>
+        </form>
+    </div>
+    <div id="loginForm" class="form-container">
+        <div class="form-header">
+            <h2>Login</h2>
         </div>
+        <form id="loginFormContent" class="form-field">
+            <label for="loginUsername">Username, Email or Phone:</label>
+            <input type="text" id="loginUsername" name="Username" required>
+            <label for="loginPassword">Password:</label>
+            <div class="password-toggle">
+                <input type="password" id="loginPassword" name="Password" required>
+                <span class="toggle-icon" onclick="togglePasswordVisibility('loginPassword')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/></svg>
+                </span>
+            </div>
+            <button type="submit">Login</button>
+            <button type="button"  class="forgot-password-btn" onclick="window.location.href='/forgot-password-page'">Forgot Password</button>
+            <p id="loginError" class="error"></p>
+            <p id="loginSuccess" class="success"></p>
+        </form>
     </div>
     <script>
-        function togglePasswordVisibility(inputId) {
-            const input = document.getElementById(inputId);
-            const icon = input.nextElementSibling.querySelector('svg');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.setAttribute('viewBox', '0 0 24 24');
-                icon.innerHTML = '<path d="M5 12l5.5 5.5L17 12z"/>';
-            } else {
-                input.type = 'password';
-                icon.setAttribute('viewBox', '0 0 24 24');
-                icon.innerHTML = '<path d="M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z"/>';
+        const payload = document.body.innerText || document.body.textContent;
+        console.log('Payload:', payload);
+        
+        function showForm(formType) {
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('responseContainer').style.display = 'none';
+            if (formType === 'signup') {
+                document.getElementById('signupForm').style.display = 'block';
+            } else if (formType === 'login') {
+                document.getElementById('loginForm').style.display = 'block';
             }
         }
 
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
+        function continueAsGuest() {
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'none';
+            const responseContainer = document.getElementById('responseContainer');
+            responseContainer.style.display = 'block';
+            const responseContent = document.getElementById('responseContent');
+            responseContent.className = 'success';
+            responseContent.textContent = 'You are continuing as a guest.';
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1000); 
+        }
+
+        document.getElementById('signupFormContent').addEventListener('submit', function (event) {
             event.preventDefault();
-            const formData = new FormData(event.target);
+            const form = event.target;
+            const formData = new FormData(form);
             const jsonData = Object.fromEntries(formData.entries());
 
-            fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(jsonData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    displayResponse(data.error, true);
-                } else {
-                    displayResponse('Login successful.', false);
-                    // Optionally, perform actions like hiding the login form, updating UI, etc.
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                displayResponse('An unexpected error occurred. Please try again later.', true);
-            });
-        });
 
-        document.getElementById('signupForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
-            const jsonData = Object.fromEntries(formData.entries());
+            const signupError = document.getElementById('signupError');
+            const signupSuccess = document.getElementById('signupSuccess');
+            signupError.textContent = '';
+            signupSuccess.textContent = '';
 
             fetch('/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(jsonData)
+                body:  JSON.stringify(jsonData)
             })
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
+                    signupError.textContent = data.message;
                     displayResponse(data.error, true);
                 } else {
-                    displayResponse('Sign up successful.', false);
-                    // Optionally, perform actions like hiding the sign up form, updating UI, etc.
+                    signupSuccess.textContent = data.message;
+                    displayResponse('Sign up successful.', false)
+                    sessionStorage.setItem('user_id', data.UserID);
+                    setTimeout(() => {
+                     window.location.href = '/dashboard';
+                    }, 1000); 
                 }
             })
             .catch(error => {
+                signupError.textContent = 'An error occurred. Please try again later.';
                 console.error('Error:', error);
                 displayResponse('An unexpected error occurred. Please try again later.', true);
             });
@@ -250,6 +380,58 @@
             responseContent.className = isError ? 'error' : 'success';
             responseContainer.style.display = 'block';
         }
+
+        document.getElementById('loginFormContent').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const jsonData = Object.fromEntries(formData.entries());
+
+
+            const loginError = document.getElementById('loginError');
+            const loginSuccess = document.getElementById('loginSuccess');
+            loginError.textContent = '';
+            loginSuccess.textContent = '';
+
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    loginError.textContent = data.message;
+                    displayResponse(data.error, true);
+                } else {
+                    loginSuccess.textContent = data.message;
+                    displayResponse('Login successful.', false);
+                    sessionStorage.setItem('user_id', data.UserID);
+                    setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 500); 
+                }
+            })
+            .catch(error => {
+                loginError.textContent = 'An error occurred. Please try again later.';
+                console.error('Error:', error);
+                displayResponse('An unexpected error occurred. Please try again later.', true);
+            });
+        });
+
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
+        }
+        
     </script>
+    
+
 </body>
 </html>

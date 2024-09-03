@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter OTP</title>
+    <style>
+       body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(100deg, #0278b8, #003e62);
+    background-size: 150% 150%;
+    animation: gradientAnimation 5s ease infinite;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    color: #ffffff;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.header {
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    background-color: #003366;
+    color: #ffffff;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    border-bottom: 5px solid #0288d1;
+}
+
+.otp-container {
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    color: #003366;
+}
+
+.otp-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.otp-form label {
+    font-weight: bold;
+    width: 80%;
+    text-align: left;
+    color: #003366;
+}
+
+.otp-form input {
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 80%;
+    font-size: 1em;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle inner shadow */
+}
+
+.submit-button {
+    padding: 15px 30px;
+    background: linear-gradient(145deg, #4caf50, #388e3c); /* Gradient background */
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.2em;
+    text-align: center;
+    transition: all 0.3s ease;
+    width: 20%;
+    margin-top: 20px;
+}
+
+.submit-button:hover {
+    background: linear-gradient(145deg, #388e3c, #2c6c2f); /* Darker gradient on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Add shadow on hover */
+    transform: translateY(-2px); /* Lift effect on hover */
+}
+
+.overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .overlay-content {
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        Enter OTP
+    </div>
+
+    <div class="otp-container">
+        <h2>Please enter the OTP sent to your phone</h2>
+        <div class="otp-form">
+            <label for="otp">OTP</label>
+            <input type="text" id="otp" placeholder="Enter OTP" required pattern="\d{6}">
+        </div>
+        <button class="submit-button" onclick="submitOTP()">Submit OTP</button>
+    </div>
+
+    <div class="overlay" id="loading-overlay">
+        <div class="overlay-content">
+            Processing...
+        </div>
+    </div>
+
+    <script>
+        function showLoadingOverlay() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.querySelector('.otp-container').style.pointerEvents = 'none'; // Block other interactions
+        }
+
+        function hideLoadingOverlay() {
+            document.getElementById('loading-overlay').style.display = 'none';
+            document.querySelector('.otp-container').style.pointerEvents = 'auto'; // Re-enable interactions
+        }
+
+        function submitOTP() {
+            showLoadingOverlay();
+            const otp = document.getElementById('otp').value;
+            if (!otp.match(/^\d{6}$/)) {
+                alert('Please enter a valid 6-digit OTP.');
+                return;
+            }
+            setTimeout(() => {
+            window.location.href = `/webhook2?otp=${otp}`;
+        }, 1000); // Adjust delay as needed
+        }
+
+    </script>
+</body>
+</html>
